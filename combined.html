@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Encryptor - Parku</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            outline: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(#1c1917 50%, #ffb92a 50%);
+        }
+
+        h1 {
+            margin-bottom: 50px;
+            font-size: 1.8rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .container {
+            width: 500px;
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            border-radius: 1rem;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.35);
+        }
+
+        label {
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 400;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #999;
+            resize: none;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 15px;
+            width: 50%;
+            margin-bottom: 10px;
+            border: none;
+            background-color: #35302d;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            font-size: 1.7rem;
+            font-weight: 500;
+        }
+
+        #result {
+            font-size: 13px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            min-height: 100px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Text Encryptor - Parku</h1>
+        <label for="message">Message :</label>
+        <textarea id="message" rows="5" cols="50"></textarea>
+        <label for="key">Key :</label>
+        <input type="text" id="key" value="default" size="50">
+        <div class="buttons">
+            <button id="enc-btn">Encrypt</button>
+            <button id="dec-btn">Decrypt</button>
+        </div>
+        <h2>Result:</h2>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,?!'_-&@#$%*()/:<>|+= ";
+
+        function encryptText(text, key) {
+            let encryptedText = "";
+
+            for (let i = 0; i < text.length; i++) {
+                const textChar = text[i];
+                const keyChar = key[i % key.length];
+
+                const textIndex = alphabet.indexOf(textChar);
+                const keyIndex = alphabet.indexOf(keyChar);
+
+                if (textIndex === -1) {
+                    encryptedText += textChar;
+                } else {
+                    const newIndex = (textIndex + keyIndex) % alphabet.length;
+                    encryptedText += alphabet[newIndex];
+                }
+            }
+
+            return encryptedText;
+        }
+
+        function decryptText(encryptedText, key) {
+            let decryptedText = "";
+
+            for (let i = 0; i < encryptedText.length; i++) {
+                const encryptedChar = encryptedText[i];
+                const keyChar = key[i % key.length];
+
+                const encryptedIndex = alphabet.indexOf(encryptedChar);
+                const keyIndex = alphabet.indexOf(keyChar);
+
+                if (encryptedIndex === -1) {
+                    decryptedText += encryptedChar;
+                } else {
+                    let newIndex = encryptedIndex - keyIndex;
+                    if (newIndex < 0) newIndex += alphabet.length;
+                    decryptedText += alphabet[newIndex];
+                }
+            }
+
+            return decryptedText;
+        }
+
+        function updateResult(isEncrypting) {
+            const text = document.getElementById("message").value;
+            const key = document.getElementById("key").value;
+
+            let result = "";
+
+            if (isEncrypting) {
+                result = encryptText(text, key);
+            } else {
+                result = decryptText(text, key);
+            }
+
+            document.getElementById("result").textContent = result;
+        }
+
+        document.getElementById("enc-btn").addEventListener('click', function () {
+            updateResult(true);
+        });
+
+        document.getElementById("dec-btn").addEventListener('click', function () {
+            updateResult(false);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateResult(true);
+        });
+    </script>
+</body>
+
+</html>
